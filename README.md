@@ -99,10 +99,10 @@ Server runs on `http://localhost:3000`
 
 ## Authentication
 
-Two ways to pass identity (no auth layer as per assignment spec):
+As per the assignment spec, no auth layer was implemented. User identity is passed directly in the request:
 
 1. **Header (for testing):** `X-User-Id: 1`
-2. **JWT:** `Authorization: Bearer <token>` — token returned from signup/login
+2. **JWT:** `Authorization: Bearer <token>` — token returned from signup/login (optional, both are supported)
 
 ## Creating an Expense
 
