@@ -2,7 +2,7 @@
   "info": {
     "name": "Splitwise MVP",
     "_postman_id": "splitwise-mvp-collection",
-    "description": "API collection for the Splitwise MVP assignment.\n\n## Auth\nAll protected routes need either:\n- `X-User-Id: <id>` header (easy for testing)\n- `Authorization: Bearer <token>` header (JWT from login/signup)\n\n## Quick Start\n1. Run the two signup requests to create Alice & Bob\n2. Use X-User-Id: 1 for Alice, X-User-Id: 2 for Bob\n3. Create expenses, check balances",
+    "description": "API collection for the Splitwise MVP.\n\nAuth: use X-User-Id header for testing (X-User-Id: 1 = Alice, X-User-Id: 2 = Bob)\n\nRun order is set up so the full Runner flow works end-to-end without conflicts.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -13,7 +13,7 @@
       "name": "Auth",
       "item": [
         {
-          "name": "Signup",
+          "name": "Signup - Alice",
           "request": {
             "method": "POST",
             "url": "{{BASE_URL}}/auth/signup",
@@ -21,6 +21,18 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@test.com\",\n  \"password\": \"pass123\",\n  \"defaultCurrency\": \"INR\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Signup - Bob",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/signup",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bob\",\n  \"email\": \"bob@test.com\",\n  \"password\": \"pass123\",\n  \"defaultCurrency\": \"USD\"\n}"
             }
           }
         },
@@ -50,7 +62,7 @@
           }
         },
         {
-          "name": "Update Profile (email + currency)",
+          "name": "Update Profile (name + currency)",
           "request": {
             "method": "PUT",
             "url": "{{BASE_URL}}/users/me",
@@ -62,14 +74,6 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Alice Smith\",\n  \"defaultCurrency\": \"USD\"\n}"
             }
-          }
-        },
-        {
-          "name": "Delete Account",
-          "request": {
-            "method": "DELETE",
-            "url": "{{BASE_URL}}/users/me",
-            "header": [{ "key": "X-User-Id", "value": "1" }]
           }
         }
       ]
@@ -88,7 +92,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Dinner at Taj\",\n  \"totalAmount\": 1200,\n  \"currency\": \"INR\",\n  \"date\": \"2026-05-04\",\n  \"splitType\": \"equal\",\n  \"members\": [2],\n  \"notes\": \"Goa trip dinner\"\n}"
+              "raw": "{\n  \"name\": \"Dinner at Taj\",\n  \"totalAmount\": 1200,\n  \"currency\": \"INR\",\n  \"date\": \"2026-05-05\",\n  \"splitType\": \"equal\",\n  \"members\": [2],\n  \"notes\": \"Goa trip dinner\"\n}"
             }
           }
         },
@@ -131,14 +135,6 @@
           }
         },
         {
-          "name": "Delete Expense",
-          "request": {
-            "method": "DELETE",
-            "url": "{{BASE_URL}}/expenses/1",
-            "header": [{ "key": "X-User-Id", "value": "1" }]
-          }
-        },
-        {
           "name": "Activity Log (Default - current + last month)",
           "request": {
             "method": "GET",
@@ -150,13 +146,15 @@
           "name": "Activity Log (Custom Date Range)",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{BASE_URL}}/expenses/activity?startDate=2026-04-01&endDate=2026-04-30",
-              "query": [
-                { "key": "startDate", "value": "2026-04-01" },
-                { "key": "endDate", "value": "2026-04-30" }
-              ]
-            },
+            "url": "{{BASE_URL}}/expenses/activity?startDate=2026-04-01&endDate=2026-04-30",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        },
+        {
+          "name": "Delete Expense",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/expenses/1",
             "header": [{ "key": "X-User-Id", "value": "1" }]
           }
         }
@@ -194,6 +192,19 @@
               "mode": "raw",
               "raw": "{\n  \"month\": \"May 2026\"\n}"
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cleanup (run last)",
+      "item": [
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/users/me",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
           }
         }
       ]

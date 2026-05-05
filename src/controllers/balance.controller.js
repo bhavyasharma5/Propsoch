@@ -56,11 +56,10 @@ async function sendMonthlyReportEmail(req, res, next) {
 
     res.json({
       success: true,
-      message: `Monthly report sent to ${user.email}`,
-      // Include preview URL if using Ethereal (test SMTP) - very handy during dev
-      previewUrl: info.messageId
-        ? `Check your inbox or use https://ethereal.email for test emails`
-        : undefined,
+      message: info.simulated
+        ? `SMTP not configured - report logged to server console for ${user.email}`
+        : `Monthly report sent to ${user.email}`,
+      data: { month, balances },
     });
   } catch (err) {
     next(err);

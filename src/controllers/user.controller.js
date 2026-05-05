@@ -44,11 +44,28 @@ async function updateProfile(req, res, next) {
 
 async function deleteAccount(req, res, next) {
   try {
-    const { User } = getModels();
+    const { User, Expense, ExpenseMember } = getModels();
+    const { getSequelize } = require("../services/sequelize.service");
+    const sequelize = getSequelize();
+
     const user = await User.findByPk(req.userId);
     if (!user) throw new NotFoundError("User not found");
 
-    await user.destroy();
+    // SQLite enforces FK constraints - need to clean up related records first
+    await sequelize.transaction(async (t) => {
+      // Remove this user from all expense member lists
+      await ExpenseMember.destroy({ where: { userId: req.userId }, transaction: t });
+
+      // Delete expenses this user paid for (also cleans up their members)
+      const myExpenses = await Expense.findAll({ where: { paidBy: req.userId }, transaction: t });
+      for (const expense of myExpenses) {
+        await ExpenseMember.destroy({ where: { expenseId: expense.id }, transaction: t });
+      }
+      await Expense.destroy({ where: { paidBy: req.userId }, transaction: t });
+
+      await user.destroy({ transaction: t });
+    });
+
     res.json({ success: true, message: "Account deleted" });
   } catch (err) {
     next(err);

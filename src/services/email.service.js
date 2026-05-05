@@ -19,6 +19,12 @@ function getTransporter() {
 }
 
 async function sendMonthlyReport(toEmail, userName, balances, month) {
+  // If SMTP isn't configured, log the report instead of crashing
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.log(`[Email not configured] Monthly report for ${toEmail}:`, { month, balances });
+    return { messageId: null, simulated: true };
+  }
+
   const transport = getTransporter();
 
   // Build a simple text summary of what everyone owes / is owed
