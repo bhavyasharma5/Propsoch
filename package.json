@@ -1,0 +1,31 @@
+{
+  "name": "splitwise-mvp",
+  "version": "1.0.0",
+  "description": "A simplified Splitwise clone - expense splitting made easy",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.0",
+    "dotenv": "^16.0.1",
+    "express": "^4.20.0",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.3",
+    "nodemailer": "^6.9.7",
+    "sequelize": "^6.28.2",
+    "sqlite3": "^5.1.6",
+    "yup": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.18",
+    "sucrase": "^3.23.0"
+  },
+  "nodemonConfig": {
+    "execMap": {
+      "js": "node -r sucrase/register"
+    }
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "info": {
+    "name": "Splitwise MVP",
+    "_postman_id": "splitwise-mvp-collection",
+    "description": "API collection for the Splitwise MVP assignment.\n\n## Auth\nAll protected routes need either:\n- `X-User-Id: <id>` header (easy for testing)\n- `Authorization: Bearer <token>` header (JWT from login/signup)\n\n## Quick Start\n1. Run the two signup requests to create Alice & Bob\n2. Use X-User-Id: 1 for Alice, X-User-Id: 2 for Bob\n3. Create expenses, check balances",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "BASE_URL", "value": "http://localhost:3000/api" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/signup",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@test.com\",\n  \"password\": \"pass123\",\n  \"defaultCurrency\": \"INR\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice@test.com\",\n  \"password\": \"pass123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/users/me",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        },
+        {
+          "name": "Update Profile (email + currency)",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/users/me",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Smith\",\n  \"defaultCurrency\": \"USD\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/users/me",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Create Expense (Equal Split)",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/expenses",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dinner at Taj\",\n  \"totalAmount\": 1200,\n  \"currency\": \"INR\",\n  \"date\": \"2026-05-04\",\n  \"splitType\": \"equal\",\n  \"members\": [2],\n  \"notes\": \"Goa trip dinner\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Expense (Exact Split)",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/expenses",
+            "header": [
+              { "key": "X-User-Id", "value": "2" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uber to Airport\",\n  \"totalAmount\": 450,\n  \"currency\": \"INR\",\n  \"date\": \"2026-04-20\",\n  \"splitType\": \"exact\",\n  \"members\": [\n    { \"userId\": 1, \"share\": 225 },\n    { \"userId\": 2, \"share\": 225 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Expense by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/expenses/1",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        },
+        {
+          "name": "Update Expense",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/expenses/1",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dinner at Taj (updated)\",\n  \"notes\": \"Updated note\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Expense",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/expenses/1",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        },
+        {
+          "name": "Activity Log (Default - current + last month)",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/expenses/activity",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        },
+        {
+          "name": "Activity Log (Custom Date Range)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/expenses/activity?startDate=2026-04-01&endDate=2026-04-30",
+              "query": [
+                { "key": "startDate", "value": "2026-04-01" },
+                { "key": "endDate", "value": "2026-04-30" }
+              ]
+            },
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Balances",
+      "item": [
+        {
+          "name": "Get All Balances",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/balances",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        },
+        {
+          "name": "Get Balance with Specific User",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/balances/2",
+            "header": [{ "key": "X-User-Id", "value": "1" }]
+          }
+        },
+        {
+          "name": "Send Monthly Report Email",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/balances/monthly-report",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"month\": \"May 2026\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
